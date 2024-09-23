@@ -7,27 +7,28 @@ fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 1024];
     stream.read(&mut buffer).unwrap();
 
-    let get = b"GET / HTTP/1.1\r\n";
+    let get_root = b"GET / HTTP/1.1\r\n";
+    let get_about = b"GET /about HTTP/1.1\r\n";
 
-    if buffer.starts_with(get) {
-        let contents = fs::read_to_string("public/index.html").unwrap();
-
-        let response = format!(
-            "HTTP/1.1 200 OK\r\nContent-Length: {}\r\n\r\n{}",
-            contents.len(),
-            contents
-        );
-
-        stream.write(response.as_bytes()).unwrap();
-        stream.flush().unwrap();
+    // Vérifier la requête et répondre avec la bonne page
+    let (status_line, filename) = if buffer.starts_with(get_root) {
+        ("HTTP/1.1 200 OK", "public/index.html")
+    } else if buffer.starts_with(get_about) {
+        ("HTTP/1.1 200 OK", "public/about.html")
     } else {
-        let status_line = "HTTP/1.1 404 NOT FOUND\r\n\r\n";
-        let contents = "404 - Page not found";
-        let response = format!("{}{}", status_line, contents);
+        ("HTTP/1.1 404 NOT FOUND", "public/404.html")
+    };
 
-        stream.write(response.as_bytes()).unwrap();
-        stream.flush().unwrap();
-    }
+    let contents = fs::read_to_string(filename).unwrap();
+    let response = format!(
+        "{}\r\nContent-Length: {}\r\n\r\n{}",
+        status_line,
+        contents.len(),
+        contents
+    );
+
+    stream.write(response.as_bytes()).unwrap();
+    stream.flush().unwrap();
 }
 
 fn main() {
