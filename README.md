@@ -56,6 +56,6 @@ This project implements a simple HTTP web server in Rust capable of handling mul
 
 3. Access the server from your browser or using curl:
 
-Home route: http://127.0.0.1:7878/
-About page: http://127.0.0.1:7878/about
-404 page: Try visiting any other route to see the 404 error handling.
+- Home route: http://127.0.0.1:7878/
+- About page: http://127.0.0.1:7878/about
+- 404 page: Try visiting any other route to see the 404 error handling.
