@@ -1,6 +1,7 @@
 use std::fs;
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
+use std::thread;
 
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 1024];
@@ -30,16 +31,16 @@ fn handle_connection(mut stream: TcpStream) {
 }
 
 fn main() {
-    // On écoute sur le port 7878
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
 
-    // Boucle infinie pour accepter des connexions
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
         println!("Connection établie!");
 
-        // Appeler une fonction pour traiter chaque connexion
-        handle_connection(stream);
+        // Créer un nouveau thread pour chaque connexion
+        thread::spawn(|| {
+            handle_connection(stream);
+        });
     }
 }
