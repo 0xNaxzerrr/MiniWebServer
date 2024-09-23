@@ -1,3 +1,5 @@
+use env_logger;
+use log::info;
 use std::fs;
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
@@ -32,12 +34,14 @@ fn handle_connection(mut stream: TcpStream) {
 }
 
 fn main() {
+    env_logger::init(); // Initialiser le logger
+
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
 
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
-        println!("Connection établie!");
+        info!("Nouvelle connexion établie!");
 
         // Créer un nouveau thread pour chaque connexion
         thread::spawn(|| {
